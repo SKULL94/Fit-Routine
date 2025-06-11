@@ -1,5 +1,7 @@
+import 'package:fit_routine_app/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'workout_list_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -34,8 +36,14 @@ class OnboardingScreen extends StatelessWidget {
   }
 
   void _onDone(BuildContext context) async {
+    await _changeOnboardingInitialState();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const WorkoutListScreen()),
     );
+  }
+
+  Future<void> _changeOnboardingInitialState() async {
+    final sh = await SharedPreferences.getInstance();
+    sh.setBool(hasOnboardingInitialized, true);
   }
 }
