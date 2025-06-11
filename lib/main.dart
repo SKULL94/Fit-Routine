@@ -10,7 +10,7 @@ import 'screens/onboarding_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sh = await SharedPreferences.getInstance();
-  final hasSeenOnboarding = sh.get(hasOnboardingInitialized) as bool;
+  final hasSeenOnboarding = sh.getBool(hasOnboardingInitialized) ?? false;
   runApp(
     ProviderScope(overrides: [
       hasSeenOnboardingProvider.overrideWith((ref) => hasSeenOnboarding),
@@ -23,7 +23,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final hasOnboardingSeen = ref.read(hasSeenOnboardingProvider);
+    final hasOnboardingSeen = ref.watch(hasSeenOnboardingProvider);
     return MaterialApp(
       title: 'Fitness Tracker',
       theme: ThemeData(
