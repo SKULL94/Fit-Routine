@@ -1,7 +1,8 @@
-import 'package:fit_routine_app/providers/workout/workout_provider.dart';
+import 'package:fit_routine_app/quote/quote_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../enums/workout_type.dart';
+import '../providers/workout/workout_provider.dart';
 import '../widgets/workout_calendar_graph.dart';
 import '../widgets/workout_form_dialog.dart';
 
@@ -9,51 +10,87 @@ class WorkoutListScreen extends StatelessWidget {
   const WorkoutListScreen({super.key});
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    return Consumer(
-      builder: (_, WidgetRef ref, __) {
-        ref.watch(workoutNotifierProvider);
-        return DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              title: const SizedBox.shrink(),
-              toolbarHeight: 170,
-              flexibleSpace: const SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding:
-                        EdgeInsets.only(bottom: 56.0, left: 16.0, right: 16.0),
-                    child: WorkoutCalendarGraph(),
-                  ),
-                ),
-              ),
-              bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(48),
-                child: TabBar(
-                  tabs: [
-                    Tab(text: 'Upper Body'),
-                    Tab(text: 'Lower Body'),
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const SizedBox.shrink(),
+          toolbarHeight: 224,
+          flexibleSpace: SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 56.0, left: 16.0, right: 16.0),
+                child: Column(
+                  children: [
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final quote = ref.watch(getQuoteProvider);
+                        ref.listen(getQuoteProvider, (prev, next) {
+                          next.maybeWhen(
+                              data: (data) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text('New quote: ${data.quote}'),
+                                ));
+                              },
+                              orElse: () {});
+                        });
+                        return quote.maybeWhen(
+                          data: (data) {
+                            return Column(
+                              children: [
+                                Text(
+                                  '"${data.quote}"',
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      ref.invalidate(getQuoteProvider);
+                                    },
+                                    child: const Text("Refresh"))
+                              ],
+                            );
+                          },
+                          orElse: () => const SizedBox.shrink(),
+                        );
+                      },
+                    ),
+                    const WorkoutCalendarGraph(),
                   ],
                 ),
               ),
             ),
-            body: const TabBarView(
-              children: [
-                _WorkoutList(type: WorkoutType.upperBody),
-                _WorkoutList(type: WorkoutType.lowerBody),
+          ),
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(48),
+            child: TabBar(
+              tabs: [
+                Tab(text: 'Upper Body'),
+                Tab(text: 'Lower Body'),
               ],
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => _showAddWorkoutDialog(context),
-              child: const Icon(Icons.add),
-            ),
           ),
-        );
-      },
+        ),
+        body: const TabBarView(
+          children: [
+            _WorkoutList(type: WorkoutType.upperBody),
+            _WorkoutList(type: WorkoutType.lowerBody),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showAddWorkoutDialog(context),
+          child: const Icon(Icons.add),
+        ),
+      ),
     );
   }
 

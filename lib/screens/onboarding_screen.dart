@@ -36,10 +36,13 @@ class OnboardingScreen extends StatelessWidget {
   }
 
   void _onDone(BuildContext context) async {
+    final currentContext = context;
     await _changeOnboardingInitialState();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const WorkoutListScreen()),
-    );
+    if (currentContext.mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const WorkoutListScreen()),
+      );
+    }
   }
 
   Future<void> _changeOnboardingInitialState() async {
