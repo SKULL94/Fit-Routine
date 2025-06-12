@@ -65,37 +65,62 @@ class WorkoutListScreen extends StatelessWidget {
   }
 }
 
-class _WorkoutList extends StatelessWidget {
+class _WorkoutList extends ConsumerWidget {
   final WorkoutType type;
 
   const _WorkoutList({required this.type});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final unfilteredWorkout = ref.watch(workoutNotifierProvider);
+    final workouts =
+        unfilteredWorkout.where((workout) => workout.type == type).toList();
+    if (workouts.isEmpty) {
+      return const Center(child: Text("No workout data"));
+    }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: 2,
+      itemCount: workouts.length,
       itemBuilder: (context, index) {
+        final workout = workouts[index];
         return Card(
           child: ListTile(
             enabled: false,
-            title: const Text(
-              "workout 1",
+            title: Text(
+              workout.name,
               style: TextStyle(
-                color: Colors.grey,
+                decoration: workout.isCompleted
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
+                color: workout.isCompleted ? Colors.grey : Colors.white,
               ),
             ),
-            subtitle: const Text(
-              '1 sets',
+            subtitle: Text(
+              '${workout.sets} sets of ${workout.reps} reps at ${workout.weight} kg',
               style: TextStyle(
-                color: Colors.grey,
+                decoration: workout.isCompleted
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
+                color: workout.isCompleted ? Colors.grey : Colors.white,
               ),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Checkbox(value: false, onChanged: (_) {}),
-                IconButton(icon: const Icon(Icons.delete), onPressed: () {}),
+                Checkbox(
+                    value: workout.isCompleted,
+                    onChanged: (_) {
+                      ref
+                          .read(workoutNotifierProvider.notifier)
+                          .toggleWorkoutStatus(workout.id);
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      ref
+                          .read(workoutNotifierProvider.notifier)
+                          .removeWorkout(workout.id);
+                    }),
               ],
             ),
           ),
