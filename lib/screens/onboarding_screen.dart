@@ -1,8 +1,9 @@
-import 'package:fit_routine_app/core/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../core/constants.dart';
 import 'workout_list_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -36,16 +37,14 @@ class OnboardingScreen extends StatelessWidget {
   }
 
   void _onDone(BuildContext context) async {
-    final currentContext = context;
-    await _changeOnboardingInitialState();
-    if (currentContext.mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const WorkoutListScreen()),
-      );
-    }
+    await _changeOnboardingIntialStatus();
+    context.go('/sign-up');
+    // Navigator.of(context).pushReplacement(
+    //   MaterialPageRoute(builder: (_) => const WorkoutListScreen()),
+    // );
   }
 
-  Future<void> _changeOnboardingInitialState() async {
+  Future<void> _changeOnboardingIntialStatus() async {
     final sh = await SharedPreferences.getInstance();
     sh.setBool(hasOnboardingInitialized, true);
   }
