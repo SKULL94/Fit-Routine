@@ -1,1 +1,1 @@
-const hasOnboardingInitialized = 'hasInitialized';
+const hasOnboardingInitialized = "hasOnboardingIntialized";

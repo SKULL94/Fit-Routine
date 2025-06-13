@@ -69,10 +69,8 @@ class WorkoutCalendarGraph extends HookConsumerWidget {
                 'Last 30 days',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.7),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 ),
               ),
             ],
@@ -97,7 +95,7 @@ class WorkoutCalendarGraph extends HookConsumerWidget {
                         color: Theme.of(context)
                             .colorScheme
                             .primary
-                            .withValues(alpha: opacity),
+                            .withOpacity(opacity),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
